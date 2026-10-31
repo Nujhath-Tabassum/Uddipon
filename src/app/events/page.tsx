@@ -47,9 +47,7 @@ export default function EventsPage() {
 
   return (
     <section className="min-h-screen bg-[#FAF9F5] px-4 py-16 sm:px-8">
-
       <div className="mx-auto max-w-6xl">
-
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-bold text-brand-950">
             Upcoming Events
@@ -93,11 +91,11 @@ export default function EventsPage() {
 
         {!loading && !error && events.length > 0 && (
           <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-
             {events.map((event) => (
-              <div
+              <Link
+                href={`/events/${event._id}`}
                 key={event._id}
-                className="overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                className="block overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
                 <img
                   src={event.imageUrl}
@@ -106,7 +104,6 @@ export default function EventsPage() {
                 />
 
                 <div className="p-5">
-
                   <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-brand-800">
                     {event.eventType}
                   </span>
@@ -120,7 +117,6 @@ export default function EventsPage() {
                   </p>
 
                   <div className="mt-5 space-y-3 text-sm text-brand-700">
-
                     <p className="flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
                       {event.location}
@@ -130,16 +126,16 @@ export default function EventsPage() {
                       <CalendarDays className="h-4 w-4" />
                       {new Date(`${event.eventDate}T00:00:00`).toLocaleDateString()}
                     </p>
-
                   </div>
 
+                  <p className="mt-5 text-sm font-semibold text-brand-800">
+                    View Details →
+                  </p>
                 </div>
-              </div>
+              </Link>
             ))}
-
           </div>
         )}
-
       </div>
     </section>
   );
