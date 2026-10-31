@@ -7,6 +7,8 @@ import { CalendarDays, MapPin, ArrowLeft } from "lucide-react";
 
 const API_URL = "http://localhost:8000";
 
+
+
 interface Event {
   _id: string;
   title: string;
@@ -51,6 +53,34 @@ export default function EventDetailsPage() {
 
     fetchEvent();
   }, [id]);
+
+  const handleDelete = async () => {
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this event?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const response = await fetch(`${API_URL}/api/events/${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete event.");
+    }
+
+    router.push("/events");
+    router.refresh();
+
+  } catch (err) {
+    setError(
+      err instanceof Error ? err.message : "Something went wrong."
+    );
+  }
+};
 
   if (loading) {
     return (
@@ -134,6 +164,27 @@ export default function EventDetailsPage() {
               <p className="mt-4 leading-8 text-brand-700/80">
                 {event.description}
               </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+<div className="mt-8 flex flex-wrap gap-4">
+
+  <Link
+    href={`/events/${id}/edit`}
+    className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950"
+  >
+    Update Event
+  </Link>
+
+  <button
+    onClick={handleDelete}
+    className="rounded-lg bg-red-800 px-6 py-3 font-semibold text-white hover:bg-red-700"
+  >
+    Delete Event
+  </button>
+
+</div>
+
+</div>
 
             </div>
 
