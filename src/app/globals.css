@@ -5,6 +5,21 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand-50: #f0f9ec;
+  --color-brand-100: #e0f2da;
+  --color-brand-200: #c2e5b8;
+  --color-brand-300: #9bd38d;
+  --color-brand-400: #6fb95e;
+  --color-brand-500: #4d9a3e;
+  --color-brand-600: #3a7d2f;
+  --color-brand-700: #2d6124;
+  --color-brand-800: #244d1e;
+  --color-brand-900: #1b3a17;
+  --color-brand-950: #12301f;
+  --color-leaf-400: #8bc34a;
+  --color-leaf-500: #7cb342;
+  --color-sun-400: #ffb74d;
+  --color-sun-500: #f59e0b;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -49,6 +64,7 @@
 }
 
 :root {
+  --font-sans: var(--font-poppins), "Segoe UI", system-ui, sans-serif;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -127,4 +143,17 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Crops the Uddipon logo image down to its icon mark when used in small circles */
+.logo-mark {
+  background-image: url('/Uddipon_ Together for a Better Tomorrow.png');
+  background-repeat: no-repeat;
+  background-size: 1536px 1024px;
+  background-position: -113px -305px;
+}
+
+/* Handwritten-style accent text (Caveat) used for the taglines */
+.font-hand {
+  font-family: var(--font-hand), "Segoe UI", cursive;
 }
