@@ -80,7 +80,7 @@ export default function Banner() {
             </Link>
 
             <Link
-              href="/events/new"
+              href="/create-event"
               className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:px-5"
             >
               Add Your Event

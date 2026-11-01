@@ -68,7 +68,7 @@ function LeafSprig({ className }: { className?: string }) {
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Upcoming Events", href: "/events" },
-  { label: "Add Events", href: "/events/new" },
+  { label: "Add Events", href: "/create-event" },
   { label: "My Events", href: "/my-events" },
 ];
 

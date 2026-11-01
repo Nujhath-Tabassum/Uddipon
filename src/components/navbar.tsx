@@ -1,17 +1,18 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { usePathname, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import {
 Bell,
 CalendarDays,
 CalendarPlus,
-ChevronDown,
 Home,
 LayoutGrid,
 Menu,
 Search,
+User,
 } from "lucide-react";
 
 const navLinks = [
@@ -23,22 +24,34 @@ const navLinks = [
 
 export default function Navbar() {
 const pathname = usePathname();
+const router = useRouter();
 
-return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-white p-5 shadow-[0_1px_10px_rgba(18,48,31,0.06)]">
+const { data: session, isPending } = authClient.useSession();
+const user = session?.user;
 
+const [imageError, setImageError] = useState(false);
 
-  <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+useEffect(() => {
+setImageError(false);
+}, [user?.image]);
 
-    {/* Brand */}
-    <Link href="/" className="flex shrink-0 items-center gap-2.5">
-      <img
-        src="/Uddipon_%20Together%20for%20a%20Better%20Tomorrow.png"
-        alt="Uddipon Logo"
-        className="h-30 w-50 rounded-full object-cover"
-      />
-    </Link>
+const handleSignOut = async () => {
+try {
+await authClient.signOut();
+router.push("/");
+router.refresh();
+} catch (error) {
+console.error("Sign out failed:", error);
+}
+};
 
-    {/* Desktop Navigation */}
+return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-white p-5 shadow-[0_1px_10px_rgba(18,48,31,0.06)]"> <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8"> <Link href="/" className="flex shrink-0 items-center gap-2.5"> <img
+         src="/Uddipon_%20Together%20for%20a%20Better%20Tomorrow.png"
+         alt="Uddipon Logo"
+         className="h-30 w-50 rounded-full object-cover"
+       /> </Link>
+
+```
     <nav className="mx-auto hidden items-center gap-1 md:flex">
       {navLinks.map(({ label, href, icon: Icon }) => {
         const active = pathname === href;
@@ -54,49 +67,64 @@ return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-whi
                 : "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-brand-900/80 transition-colors hover:bg-brand-50 hover:text-brand-800"
             }
           >
-            <Icon className="h-4 w-4" aria-hidden="true" />
+            <Icon className="h-4 w-4" />
             {label}
           </Link>
         );
       })}
     </nav>
 
-    {/* Utilities */}
-    <div className="ml-auto flex items-center gap-1 md:ml-0">
+    <div className="ml-auto flex items-center gap-2 md:ml-0">
+      {isPending ? (
+        <div className="h-9 w-24 animate-pulse rounded-full bg-gray-100" />
+      ) : user ? (
+        <div className="flex items-center gap-2">
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 rounded-full border border-brand-900/10 px-3 py-1.5 transition-colors hover:bg-brand-50"
+          >
+            {user.image && !imageError ? (
+              <img
+                src={user.image}
+                alt={user.name || "Profile"}
+                onError={() => setImageError(true)}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="grid h-8 w-8 place-items-center rounded-full bg-brand-50 text-sm font-bold uppercase text-brand-800">
+                {user.name?.charAt(0) || "U"}
+              </div>
+            )}
 
-      <button
-        type="button"
-        aria-label="Search events"
-        className="grid h-9 w-9 place-items-center rounded-full text-brand-900/70 transition-colors hover:bg-brand-50 hover:text-brand-800"
-      >
-        <Search className="h-4 w-4" />
-      </button>
+            <span className="hidden max-w-24 truncate text-sm font-semibold text-brand-900 sm:block">
+              {user.name || "Profile"}
+            </span>
+          </Link>
 
-      <button
-        type="button"
-        aria-label="Notifications"
-        className="relative grid h-9 w-9 place-items-center rounded-full text-brand-900/70 transition-colors hover:bg-brand-50 hover:text-brand-800"
-      >
-        <Bell className="h-4 w-4" />
-        <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-sun-500 ring-2 ring-white" />
-      </button>
+          <button
+            onClick={handleSignOut}
+            className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Link
+            href="/login"
+            className="rounded-full border border-brand-900 px-4 py-2 text-sm font-semibold text-brand-900 transition-colors hover:bg-brand-50"
+          >
+            Sign In
+          </Link>
 
-      <button
-        type="button"
-        className="ml-1 flex items-center gap-1.5 rounded-full border border-brand-900/10 bg-white py-1 pl-1 pr-2 transition-shadow hover:shadow-sm"
-      >
-        <Avatar size="sm" className="ring-0">
-          <AvatarFallback className="bg-brand-50">
-            <span className="logo-mark block size-full rounded-full" />
-          </AvatarFallback>
-        </Avatar>
-
-        <span className="hidden text-sm font-medium text-brand-900 sm:block">
-          Profile
-        </span>
-
-        <ChevronDown className="hidden h-3.5 w-3.5 text-brand-900/50 sm:block" />
-      </button>
+          <Link
+            href="/signup"
+            className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-800"
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
 
       <button
         type="button"
@@ -108,7 +136,6 @@ return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-whi
     </div>
   </div>
 
-  {/* Mobile Navigation */}
   <nav className="flex gap-1 overflow-x-auto border-t border-brand-900/5 px-4 py-2 md:hidden">
     {navLinks.map(({ label, href, icon: Icon }) => {
       const active = pathname === href;
@@ -130,9 +157,8 @@ return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-whi
       );
     })}
   </nav>
-
 </header>
+
 
 );
 }
-
