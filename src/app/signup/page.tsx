@@ -8,292 +8,321 @@ import { authClient } from "@/lib/auth-client";
 import { User, Mail, Lock, Eye, EyeOff, Image } from "lucide-react";
 
 export default function SignupPage() {
-const router = useRouter();
+  const router = useRouter();
 
-const [loading, setLoading] = useState(false);
-const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-const [formData, setFormData] = useState({
-name: "",
-email: "",
-image: "",
-password: "",
-});
-const handleGoogleSignup = async () => {
-  try {
-    setLoading(true);
-
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
-  } catch (error) {
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Google signup failed."
-    );
-    setLoading(false);
-  }
-};
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-e.preventDefault();
-
-
-if (
-  !formData.name.trim() ||
-  !formData.email.trim() ||
-  !formData.image.trim() ||
-  !formData.password
-) {
-  toast.error("Please fill in all fields.");
-  return;
-}
-
-const passwordValid =
-  /[A-Z]/.test(formData.password) &&
-  /[a-z]/.test(formData.password) &&
-  formData.password.length >= 6;
-
-if (!passwordValid) {
-  toast.error(
-    "Password must contain uppercase, lowercase, and at least 6 characters."
-  );
-  return;
-}
-
-try {
-  setLoading(true);
-
-  const { error } = await authClient.signUp.email({
-    name: formData.name,
-    email: formData.email,
-    password: formData.password,
-    image: formData.image,
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    image: "",
+    password: "",
   });
 
-  if (error) {
-    throw new Error(error.message || "Failed to create account.");
-  }
+  const handleGoogleSignup = async () => {
+    try {
+      setLoading(true);
 
-  toast.success("Account created successfully!");
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Google signup failed."
+      );
+      setLoading(false);
+    }
+  };
 
-  setTimeout(() => {
-    router.push("/");
-    router.refresh();
-  }, 1200);
-} catch (err) {
-  toast.error(
-    err instanceof Error ? err.message : "Something went wrong."
-  );
-} finally {
-  setLoading(false);
-}
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
+    const name = formData.name.trim();
+    const email = formData.email.trim().toLowerCase();
+    const image = formData.image.trim();
+    const password = formData.password;
 
-};
+    if (!name || !email || !image || !password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
 
-return ( <section className="flex min-h-screen items-center justify-center bg-[#FAF9F5] px-4 py-12"> <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl md:grid-cols-2"> <div className="hidden flex-col justify-center bg-brand-900 p-12 text-white md:flex"> <h2 className="text-4xl font-bold leading-tight">
-Be the Reason Someone Smiles Today. </h2>
+    if (name.length < 2) {
+      toast.error("Name must contain at least 2 characters.");
+      return;
+    }
 
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-      <p className="mt-5 leading-8 text-white/80">
-        Create your Uddipon account and connect with people who are
-        working together to make their communities better.
-      </p>
+    if (!emailValid) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
 
-      <div className="mt-8 rounded-xl bg-white/10 p-6">
-        <p className="text-lg font-semibold">
-          Your Community Needs You!
-        </p>
+    try {
+      const imageUrl = new URL(image);
 
-        <p className="mt-2 text-sm text-white/70">
-          Discover events, participate in activities, and make a
-          meaningful difference.
-        </p>
-      </div>
-    </div>
+      if (
+        imageUrl.protocol !== "http:" &&
+        imageUrl.protocol !== "https:"
+      ) {
+        toast.error("Profile photo URL must start with HTTP or HTTPS.");
+        return;
+      }
+    } catch {
+      toast.error("Please enter a valid profile photo URL.");
+      return;
+    }
 
-    <div className="flex flex-col justify-center p-8 sm:p-12">
-      <Link
-        href="/"
-        className="mb-8 text-sm font-semibold text-brand-800 hover:text-brand-950"
-      >
-        ← Back to Home
-      </Link>
+    const passwordValid =
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      password.length >= 6;
 
-      <h1 className="text-3xl font-bold text-brand-950">
-        Create an Account
-      </h1>
+    if (!passwordValid) {
+      toast.error(
+        "Password must contain uppercase, lowercase, and at least 6 characters."
+      );
+      return;
+    }
 
-      <p className="mt-3 text-gray-600">
-        Join Uddipon and start making a positive impact.
-      </p>
+    try {
+      setLoading(true);
 
-      <form onSubmit={handleSubmit} className="mt-7 space-y-4">
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-brand-950">
-            Full Name *
-          </label>
+      const { error } = await authClient.signUp.email({
+        name,
+        email,
+        password,
+        image,
+      });
 
-          <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
-            <User className="h-5 w-5 text-gray-400" />
+      if (error) {
+        throw new Error(error.message || "Failed to create account.");
+      }
 
-            <input
-              type="text"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              className="h-11 w-full bg-transparent px-3 outline-none"
-              required
-            />
+      toast.success("Account created successfully!");
+
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 1200);
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="flex min-h-screen items-center justify-center bg-[#FAF9F5] px-4 py-12">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl md:grid-cols-2">
+        <div className="hidden flex-col justify-center bg-brand-900 p-12 text-white md:flex">
+          <h2 className="text-4xl font-bold leading-tight">
+            Be the Reason Someone Smiles Today.
+          </h2>
+
+          <p className="mt-5 leading-8 text-white/80">
+            Create your Uddipon account and connect with people who are
+            working together to make their communities better.
+          </p>
+
+          <div className="mt-8 rounded-xl bg-white/10 p-6">
+            <p className="text-lg font-semibold">
+              Your Community Needs You!
+            </p>
+
+            <p className="mt-2 text-sm text-white/70">
+              Discover events, participate in activities, and make a
+              meaningful difference.
+            </p>
           </div>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-brand-950">
-            Email Address *
-          </label>
+        <div className="flex flex-col justify-center p-8 sm:p-12">
+          <Link
+            href="/"
+            className="mb-8 text-sm font-semibold text-brand-800 hover:text-brand-950"
+          >
+            ← Back to Home
+          </Link>
 
-          <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
-            <Mail className="h-5 w-5 text-gray-400" />
+          <h1 className="text-3xl font-bold text-brand-950">
+            Create an Account
+          </h1>
 
-            <input
-              type="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              className="h-11 w-full bg-transparent px-3 outline-none"
-              required
-            />
-          </div>
-        </div>
+          <p className="mt-3 text-gray-600">
+            Join Uddipon and start making a positive impact.
+          </p>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-brand-950">
-            Profile Photo URL *
-          </label>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="mt-7 space-y-4"
+          >
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-950">
+                Full Name *
+              </label>
 
-          <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
-            <Image className="h-5 w-5 text-gray-400" />
+              <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
+                <User className="h-5 w-5 text-gray-400" />
 
-            <input
-              type="url"
-              placeholder="Paste your image URL"
-              value={formData.image}
-              onChange={(e) =>
-                setFormData({ ...formData, image: e.target.value })
-              }
-              className="h-11 w-full bg-transparent px-3 outline-none"
-              required
-            />
-          </div>
-        </div>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className="h-11 w-full bg-transparent px-3 outline-none"
+                />
+              </div>
+            </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-semibold text-brand-950">
-            Password *
-          </label>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-950">
+                Email Address *
+              </label>
 
-          <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
-            <Lock className="h-5 w-5 text-gray-400" />
+              <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
+                <Mail className="h-5 w-5 text-gray-400" />
 
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Create a password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-              className="h-11 w-full bg-transparent px-3 outline-none"
-              required
-            />
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className="h-11 w-full bg-transparent px-3 outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-950">
+                Profile Photo URL *
+              </label>
+
+              <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
+                <Image className="h-5 w-5 text-gray-400" />
+
+                <input
+                  type="url"
+                  placeholder="Paste your image URL"
+                  value={formData.image}
+                  onChange={(e) =>
+                    setFormData({ ...formData, image: e.target.value })
+                  }
+                  className="h-11 w-full bg-transparent px-3 outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-950">
+                Password *
+              </label>
+
+              <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
+                <Lock className="h-5 w-5 text-gray-400" />
+
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                  className="h-11 w-full bg-transparent px-3 outline-none"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-400"
+                  aria-label="Toggle password visibility"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+
+              <p className="mt-2 text-xs text-gray-500">
+                Use at least 6 characters, including uppercase and lowercase
+                letters.
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-brand-900 py-3 font-semibold text-white transition hover:bg-brand-800 disabled:opacity-60"
+            >
+              {loading ? "Creating Account..." : "Sign Up"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-semibold text-brand-800 hover:underline"
+            >
+              Sign In
+            </Link>
+          </p>
+
+          <div className="mt-5">
+            <div className="relative flex items-center">
+              <div className="flex-grow border-t border-gray-200"></div>
+
+              <span className="px-4 text-sm text-gray-500">OR</span>
+
+              <div className="flex-grow border-t border-gray-200"></div>
+            </div>
 
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="text-gray-400"
-              aria-label="Toggle password visibility"
+              onClick={handleGoogleSignup}
+              disabled={loading}
+              className="mt-5 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
             >
-              {showPassword ? (
-                <EyeOff className="h-5 w-5" />
-              ) : (
-                <Eye className="h-5 w-5" />
-              )}
+              <svg viewBox="0 0 48 48" className="h-5 w-5">
+                <path
+                  fill="#EA4335"
+                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+                  transform="translate(0 5)"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.65 5.93c4.46-4.12 7.12-10.2 7.12-17.58z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.86.92 7.51 2.53 10.78l8-6.19z"
+                  transform="translate(0 0)"
+                />
+                <path
+                  fill="#34A853"
+                  d="M24 48c6.48 0 11.93-2.13 15.91-5.87l-7.65-5.93c-2.13 1.43-4.86 2.3-8.26 2.3-6.26 0-11.57-4.22-13.47-9.91l-8 6.19C6.51 42.62 14.62 48 24 48z"
+                />
+              </svg>
+
+              Continue with Google
             </button>
           </div>
-
-          <p className="mt-2 text-xs text-gray-500">
-            Use at least 6 characters, including uppercase and lowercase
-            letters.
-          </p>
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-brand-900 py-3 font-semibold text-white transition hover:bg-brand-800 disabled:opacity-60"
-        >
-          {loading ? "Creating Account..." : "Sign Up"}
-        </button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-gray-600">
-        Already have an account?{" "}
-        <Link
-          href="/login"
-          className="font-semibold text-brand-800 hover:underline"
-        >
-          Sign In
-        </Link>
-      </p>
-      <div className="mt-5">
-  <div className="relative flex items-center">
-    <div className="flex-grow border-t border-gray-200"></div>
-    <span className="px-4 text-sm text-gray-500">
-      OR
-    </span>
-    <div className="flex-grow border-t border-gray-200"></div>
-  </div>
-
-  <button
-    type="button"
-    onClick={handleGoogleSignup}
-    disabled={loading}
-    className="mt-5 flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 py-3 font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
-  >
-    <svg viewBox="0 0 48 48" className="h-5 w-5">
-      <path
-        fill="#EA4335"
-        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-        transform="translate(0 5)"
-      />
-      <path
-        fill="#4285F4"
-        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.73 7.18l7.65 5.93c4.46-4.12 7.12-10.2 7.12-17.58z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.9 23.9 0 0 0 0 24c0 3.86.92 7.51 2.53 10.78l8-6.19z"
-        transform="translate(0 0)"
-      />
-      <path
-        fill="#34A853"
-        d="M24 48c6.48 0 11.93-2.13 15.91-5.87l-7.65-5.93c-2.13 1.43-4.86 2.3-8.26 2.3-6.26 0-11.57-4.22-13.47-9.91l-8 6.19C6.51 42.62 14.62 48 24 48z"
-      />
-    </svg>
-
-    Continue with Google
-  </button>
-</div>
-    </div>
-  </div>
-</section>
-
-
-);
+      </div>
+    </section>
+  );
 }
