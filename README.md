@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌱 Uddipon – Together for a Better Tomorrow
 
-## Getting Started
+### Small Actions, Meaningful Changes.
 
-First, run the development server:
+**Live Website:** [Add Your Live Website URL Here]
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌍 About the Project
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uddipon is a social development events platform designed to bring people together for a better tomorrow. It provides a space where individuals can discover meaningful community initiatives, participate in social activities, and organize events that make a positive impact on society.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+From environmental campaigns to donation drives, Uddipon encourages everyone to take small steps toward building a stronger, kinder, and more supportive community.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features
 
-## Learn More
+* 🔐 **Secure Authentication:** Register and log in using email and password or Google authentication.
+* 📅 **Explore Upcoming Events:** Discover upcoming social development events with detailed information about dates, locations, and categories.
+* 🏷️ **Category-Based Filtering:** Easily find events by filtering categories such as Donation, Cleanup, Plantation, Blood Donation, and Food Distribution.
+* ➕ **Create an Event:** Logged-in users can organize and publish their own community events.
+* 🤝 **Join Events:** Participate in activities and become part of initiatives that create positive social change.
+* 📌 **Joined Events:** Keep track of all the events you have joined in one place.
+* 📝 **Manage Your Events:** Event creators can edit or delete the events they have created.
+* 🏠 **Dynamic Homepage:** Discover recent events and explore different sections of the platform.
+* 📱 **Responsive Design:** Enjoy a consistent and user-friendly experience across desktop, tablet, and mobile devices.
+* ⏳ **Loading Skeletons:** Enjoy a smoother browsing experience with loading placeholders while event data is being fetched.
+* 🔔 **Toast Notifications:** Receive clear feedback for important actions such as logging in, creating events, and joining events.
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Technologies Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Frontend**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* Next.js
+* React
+* TypeScript
+* Tailwind CSS
+* Lucide React
 
-## Deploy on Vercel
+**Backend**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Node.js
+* Express.js
+* MongoDB
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Authentication & Notifications**
+
+* Better Auth
+* Google OAuth
+* JWT
+* React Toastify
+
+## 🎯 Our Mission
+
+We believe that meaningful change begins with small actions. Uddipon aims to make community participation easier by connecting people with opportunities to help, contribute, and make a difference.
+
+**Join hands. Share kindness. Create change. 💚**
+
+---
+
+*Uddipon – Together, we can build a better tomorrow.*
