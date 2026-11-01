@@ -80,8 +80,17 @@ function EventDetailsContent() {
       }
 
       try {
+        const { data: tokenData, error: tokenError } =
+          await authClient.token();
+
+        if (tokenError || !tokenData?.token) {
+          throw new Error("Please login again.");
+        }
+
         const response = await fetch(`${API_URL}/api/my-events`, {
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
         });
 
         if (!response.ok) {
@@ -90,9 +99,7 @@ function EventDetailsContent() {
 
         const joinedEvents: Event[] = await response.json();
 
-        setIsAdded(
-          joinedEvents.some((item) => item._id === id)
-        );
+        setIsAdded(joinedEvents.some((item) => item._id === id));
       } catch (err) {
         console.error("Joined event check failed:", err);
       }
@@ -118,11 +125,20 @@ function EventDetailsContent() {
     try {
       setJoining(true);
 
+      const { data: tokenData, error: tokenError } =
+        await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        throw new Error("Please login again.");
+      }
+
       const response = await fetch(
         `${API_URL}/api/events/${id}/join`,
         {
           method: "POST",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
         }
       );
 
@@ -148,9 +164,18 @@ function EventDetailsContent() {
     try {
       setDeleting(true);
 
+      const { data: tokenData, error: tokenError } =
+        await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        throw new Error("Please login again.");
+      }
+
       const response = await fetch(`${API_URL}/api/events/${id}`, {
         method: "DELETE",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${tokenData.token}`,
+        },
       });
 
       const data = await response.json();
@@ -256,11 +281,7 @@ function EventDetailsContent() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
-                {isOwner && (
-                  <>
-                    
-                  </>
-                )}
+                {isOwner && <></>}
 
                 <button
                   onClick={handleJoinEvent}

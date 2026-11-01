@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CalendarDays, MapPin, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { authClient } from "@/lib/auth-client";
 
 const API_URL = "http://localhost:8000";
 
@@ -25,8 +26,16 @@ export default function MyEventsPage() {
 
   const fetchMyEvents = async () => {
     try {
+      const { data: tokenData, error: tokenError } = await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        throw new Error("Please login again.");
+      }
+
       const response = await fetch(`${API_URL}/api/my-events`, {
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${tokenData.token}`,
+        },
       });
 
       const data = await response.json();
@@ -53,11 +62,19 @@ export default function MyEventsPage() {
     try {
       setRemovingId(id);
 
+      const { data: tokenData, error: tokenError } = await authClient.token();
+
+      if (tokenError || !tokenData?.token) {
+        throw new Error("Please login again.");
+      }
+
       const response = await fetch(
         `${API_URL}/api/events/${id}/join`,
         {
           method: "DELETE",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${tokenData.token}`,
+          },
         }
       );
 

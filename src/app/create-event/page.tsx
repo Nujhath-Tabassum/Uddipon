@@ -3,6 +3,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
@@ -64,14 +65,21 @@ export default function CreateEventPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/events`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const { data: tokenData, error: tokenError } = await authClient.token();
+
+if (tokenError || !tokenData?.token) {
+  toast.error("Please login again.");
+  return;
+}
+
+const response = await fetch(`${API_URL}/api/events`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${tokenData.token}`,
+  },
+  body: JSON.stringify(formData),
+});
 
       const data = await response.json();
 
