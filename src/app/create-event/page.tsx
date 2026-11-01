@@ -4,6 +4,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 
 const API_URL = "http://localhost:8000";
@@ -64,6 +65,7 @@ export default function CreateEventPage() {
 
       const response = await fetch(`${API_URL}/api/events`, {
         method: "POST",
+         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -103,6 +105,7 @@ export default function CreateEventPage() {
     "w-full rounded-lg border border-brand-900/10 bg-white px-4 py-3 text-sm text-brand-900 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-600/10";
 
   return (
+     <ProtectedRoute>
     <section className="min-h-screen bg-[#FAF9F5] px-4 py-12 sm:px-8">
       <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="rounded-2xl bg-white p-6 shadow-sm sm:p-9">
@@ -264,5 +267,6 @@ export default function CreateEventPage() {
         </div>
       </div>
     </section>
+    </ProtectedRoute>
   );
 }

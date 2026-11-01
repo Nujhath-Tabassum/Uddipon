@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
@@ -6,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { CalendarDays, MapPin, ArrowLeft } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 const API_URL = "http://localhost:8000";
 
@@ -17,6 +17,8 @@ interface Event {
   imageUrl: string;
   location: string;
   eventDate: string;
+  createdBy?: string;
+  createdById?: string;
 }
 
 function EventDetailsContent() {
@@ -25,12 +27,23 @@ function EventDetailsContent() {
 
   const id = params.id as string;
 
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAdded, setIsAdded] = useState(false);
+  const [joining, setJoining] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const isOwner =
+    !!user &&
+    !!event &&
+    (event.createdBy === user.email ||
+      event.createdBy === user.id ||
+      event.createdById === user.id);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -52,20 +65,84 @@ function EventDetailsContent() {
       }
     };
 
-    fetchEvent();
+    if (id) {
+      fetchEvent();
+    }
   }, [id]);
 
   useEffect(() => {
-    if (!event) return;
+    const checkJoinedEvent = async () => {
+      if (isPending) return;
 
-    const savedEvents = JSON.parse(
-      localStorage.getItem("myEvents") || "[]"
-    );
+      if (!user) {
+        setIsAdded(false);
+        return;
+      }
 
-    setIsAdded(
-      savedEvents.some((item: Event) => item._id === event._id)
-    );
-  }, [event]);
+      try {
+        const response = await fetch(`${API_URL}/api/my-events`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to check joined events.");
+        }
+
+        const joinedEvents: Event[] = await response.json();
+
+        setIsAdded(
+          joinedEvents.some((item) => item._id === id)
+        );
+      } catch (err) {
+        console.error("Joined event check failed:", err);
+      }
+    };
+
+    checkJoinedEvent();
+  }, [id, user?.id, user?.email, isPending]);
+
+  const handleJoinEvent = async () => {
+    if (isPending) return;
+
+    if (!user) {
+      toast.info("Please login to join this event.");
+      router.push("/login");
+      return;
+    }
+
+    if (isAdded) {
+      toast.info("You have already joined this event!");
+      return;
+    }
+
+    try {
+      setJoining(true);
+
+      const response = await fetch(
+        `${API_URL}/api/events/${id}/join`,
+        {
+          method: "POST",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to join event.");
+      }
+
+      setIsAdded(true);
+
+      toast.success("You have successfully joined the event!");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Something went wrong."
+      );
+    } finally {
+      setJoining(false);
+    }
+  };
 
   const handleDelete = async () => {
     try {
@@ -73,6 +150,7 @@ function EventDetailsContent() {
 
       const response = await fetch(`${API_URL}/api/events/${id}`, {
         method: "DELETE",
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -80,16 +158,6 @@ function EventDetailsContent() {
       if (!response.ok) {
         throw new Error(data.message || "Failed to delete event.");
       }
-
-      const savedEvents = JSON.parse(
-        localStorage.getItem("myEvents") || "[]"
-      );
-
-      const updatedEvents = savedEvents.filter(
-        (item: Event) => item._id !== id
-      );
-
-      localStorage.setItem("myEvents", JSON.stringify(updatedEvents));
 
       setShowDeleteConfirm(false);
 
@@ -108,33 +176,7 @@ function EventDetailsContent() {
     }
   };
 
-  const handleAddToMyEvents = () => {
-    if (!event) return;
-
-    const savedEvents = JSON.parse(
-      localStorage.getItem("myEvents") || "[]"
-    );
-
-    const alreadyAdded = savedEvents.some(
-      (item: Event) => item._id === event._id
-    );
-
-    if (alreadyAdded) {
-      setIsAdded(true);
-      toast.info("This event is already in My Events!");
-      return;
-    }
-
-    savedEvents.push(event);
-
-    localStorage.setItem("myEvents", JSON.stringify(savedEvents));
-
-    setIsAdded(true);
-
-    toast.success("Event added to My Events successfully!");
-  };
-
-  if (loading) {
+  if (loading || isPending) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FAF9F5]">
         <p className="text-brand-800">Loading event details...</p>
@@ -214,25 +256,34 @@ function EventDetailsContent() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-4">
-                <Link
-                  href={`/events/${id}/edit`}
-                  className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950"
-                >
-                  Update Event
-                </Link>
+                {isOwner && (
+                  <>
+                    <Link
+                      href={`/events/${id}/edit`}
+                      className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950"
+                    >
+                      Update Event
+                    </Link>
+
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="rounded-lg bg-red-800 px-6 py-3 font-semibold text-white hover:bg-red-700"
+                    >
+                      Delete Event
+                    </button>
+                  </>
+                )}
 
                 <button
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="rounded-lg bg-red-800 px-6 py-3 font-semibold text-white hover:bg-red-700"
+                  onClick={handleJoinEvent}
+                  disabled={joining || isAdded}
+                  className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Delete Event
-                </button>
-
-                <button
-                  onClick={handleAddToMyEvents}
-                  className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950"
-                >
-                  {isAdded ? "Already Added ✓" : "Add to My Events"}
+                  {joining
+                    ? "Joining..."
+                    : isAdded
+                      ? "Already Joined ✓"
+                      : "Join Event"}
                 </button>
               </div>
             </div>
@@ -289,4 +340,3 @@ export default function EventDetailsPage() {
     </Suspense>
   );
 }
-

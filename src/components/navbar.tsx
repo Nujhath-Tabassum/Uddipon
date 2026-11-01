@@ -5,21 +5,24 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import {
-Bell,
 CalendarDays,
 CalendarPlus,
 Home,
 LayoutGrid,
 Menu,
-Search,
+Users,
 User,
 } from "lucide-react";
 
 const navLinks = [
 { label: "Home", href: "/", icon: Home },
 { label: "Upcoming Events", href: "/events", icon: CalendarDays },
-{ label: "Add Events", href: "/create-event", icon: CalendarPlus },
-{ label: "My Events", href: "/my-events", icon: LayoutGrid },
+];
+
+const profileLinks = [
+{ label: "Create Event", href: "/create-event", icon: CalendarPlus },
+{ label: "Manage Events", href: "/manage-events", icon: LayoutGrid },
+{ label: "Joined Events", href: "/my-events", icon: Users },
 ];
 
 export default function Navbar() {
@@ -30,6 +33,7 @@ const { data: session, isPending } = authClient.useSession();
 const user = session?.user;
 
 const [imageError, setImageError] = useState(false);
+const [dropdownOpen, setDropdownOpen] = useState(false);
 
 useEffect(() => {
 setImageError(false);
@@ -38,6 +42,7 @@ setImageError(false);
 const handleSignOut = async () => {
 try {
 await authClient.signOut();
+setDropdownOpen(false);
 router.push("/");
 router.refresh();
 } catch (error) {
@@ -79,51 +84,89 @@ return ( <header className="sticky top-0 z-50 border-b border-brand-900/5 bg-whi
         <div className="h-9 w-24 animate-pulse rounded-full bg-gray-100" />
       ) : user ? (
         <div className="flex items-center gap-2">
-          <Link
-            href="/profile"
-            className="flex items-center gap-2 rounded-full border border-brand-900/10 px-3 py-1.5 transition-colors hover:bg-brand-50"
+          <div
+            className="relative"
+            onMouseEnter={() => setDropdownOpen(true)}
+            onMouseLeave={() => setDropdownOpen(false)}
           >
-            {user.image && !imageError ? (
-              <img
-                src={user.image}
-                alt={user.name || "Profile"}
-                onError={() => setImageError(true)}
-                className="h-8 w-8 rounded-full object-cover"
-              />
-            ) : (
-              <div className="grid h-8 w-8 place-items-center rounded-full bg-brand-50 text-sm font-bold uppercase text-brand-800">
-                {user.name?.charAt(0) || "U"}
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              title={user.name || "Profile"}
+              aria-label="Open profile menu"
+              aria-expanded={dropdownOpen}
+              className="flex items-center gap-2 rounded-full border border-brand-900/10 p-1.5 transition-colors hover:bg-brand-50"
+            >
+              {user.image && !imageError ? (
+                <img
+                  src={user.image}
+                  alt={user.name || "Profile"}
+                  onError={() => setImageError(true)}
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              ) : (
+                <div className="grid h-9 w-9 place-items-center rounded-full bg-brand-50 text-sm font-bold uppercase text-brand-800">
+                  {user.name?.charAt(0) || "U"}
+                </div>
+              )}
 
-            <span className="hidden max-w-24 truncate text-sm font-semibold text-brand-900 sm:block">
-              {user.name || "Profile"}
-            </span>
-          </Link>
+              <span className="hidden max-w-24 truncate px-2 text-sm font-semibold text-brand-900 sm:block">
+                {user.name || "Profile"}
+              </span>
+            </button>
+
+            <div
+              className={`absolute right-0 top-full z-50 w-56 pt-2 transition-all duration-200 ${
+                dropdownOpen
+                  ? "visible translate-y-0 opacity-100"
+                  : "invisible -translate-y-2 opacity-0"
+              }`}
+            >
+              <div className="rounded-xl border border-gray-100 bg-white p-2 shadow-xl">
+                <div className="border-b border-gray-100 px-3 py-3">
+                  <p className="truncate text-sm font-semibold text-brand-950">
+                    {user.name || "User"}
+                  </p>
+                  <p className="truncate text-xs text-gray-500">
+                    {user.email}
+                  </p>
+                </div>
+
+                <div className="py-2">
+                  {profileLinks.map(({ label, href, icon: Icon }) => (
+                    <Link
+                      key={label}
+                      href={href}
+                      onClick={() => setDropdownOpen(false)}
+                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                        pathname === href
+                          ? "bg-brand-50 font-semibold text-brand-900"
+                          : "text-gray-700 hover:bg-brand-50 hover:text-brand-900"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
 
           <button
             onClick={handleSignOut}
             className="rounded-full border border-red-200 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
           >
-            Sign Out
+            Logout
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-2">
-          <Link
-            href="/login"
-            className="rounded-full border border-brand-900 px-4 py-2 text-sm font-semibold text-brand-900 transition-colors hover:bg-brand-50"
-          >
-            Sign In
-          </Link>
-
-          <Link
-            href="/signup"
-            className="rounded-full bg-brand-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-800"
-          >
-            Sign Up
-          </Link>
-        </div>
+        <Link
+          href="/login"
+          className="rounded-full bg-brand-900 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-800"
+        >
+          Login
+        </Link>
       )}
 
       <button

@@ -91,6 +91,7 @@ setSaving(true);
 try {
   const response = await fetch(`${API_URL}/api/events/${id}`, {
     method: "PATCH",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
