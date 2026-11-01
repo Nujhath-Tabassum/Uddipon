@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { ArrowLeft } from "lucide-react";
-import ProtectedRoute from "@/components/ProtectedRoute";
 
 const API_URL = "http://localhost:8000";
 
@@ -38,9 +37,7 @@ location: "",
 eventDate: "",
 });
 
-const minDate = new Date().toLocaleDateString("en-CA", {
-timeZone: "Asia/Dhaka",
-});
+const minDate = new Date().toLocaleDateString("en-CA");
 
 useEffect(() => {
 const fetchEvent = async () => {
@@ -70,9 +67,7 @@ const data = await response.json();
   }
 };
 
-if (id) {
-  fetchEvent();
-}
+fetchEvent();
 
 
 }, [id]);
@@ -90,11 +85,6 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 e.preventDefault();
 setError("");
 
-
-if (formData.eventDate < minDate) {
-  toast.error("Please select a future event date.");
-  return;
-}
 
 setSaving(true);
 
@@ -139,160 +129,144 @@ Loading event... </div>
 );
 }
 
-if (error && !formData.title) {
-return ( <div className="flex min-h-screen flex-col items-center justify-center bg-[#FAF9F5]"> <h2 className="text-2xl font-bold text-brand-950">
-Unable to Load Event </h2>
-
-
-    <p className="mt-3 text-red-600">{error}</p>
+return ( <section className="min-h-screen bg-[#FAF9F5] px-4 py-12 sm:px-8"> <div className="mx-auto max-w-3xl">
 
     <Link
-      href="/manage-events"
-      className="mt-5 rounded-lg bg-brand-800 px-6 py-3 text-white"
+      href={`/events/${id}`}
+      className="mb-8 flex items-center gap-2 font-semibold text-brand-800"
     >
-      Back to Manage Events
+      <ArrowLeft className="h-5 w-5" />
+      Back to Details
     </Link>
-  </div>
-);
 
+    <div className="rounded-2xl bg-white p-6 shadow-md sm:p-10">
 
-}
+      <h1 className="text-3xl font-bold text-brand-950">
+        Update Event
+      </h1>
 
-return ( <ProtectedRoute> <section className="min-h-screen bg-[#FAF9F5] px-4 py-12 sm:px-8"> <div className="mx-auto max-w-3xl">
-<Link
-href={`/events/${id}`}
-className="mb-8 flex items-center gap-2 font-semibold text-brand-800"
-> <ArrowLeft className="h-5 w-5" />
-Back to Details </Link>
+      <p className="mt-2 text-brand-700/70">
+        Edit your event information below.
+      </p>
 
-```
-      <div className="rounded-2xl bg-white p-6 shadow-md sm:p-10">
-        <h1 className="text-3xl font-bold text-brand-950">
-          Update Event
-        </h1>
-
-        <p className="mt-2 text-brand-700/70">
-          Edit your event information below.
+      {error && (
+        <p className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+          {error}
         </p>
+      )}
 
-        {error && (
-          <p className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-            {error}
-          </p>
-        )}
+      <form onSubmit={handleSubmit} className="mt-8 space-y-5">
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Event Title
-            </label>
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Event Title
+          </label>
 
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            />
-          </div>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
+          />
+        </div>
 
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Description
-            </label>
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Description
+          </label>
 
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              rows={5}
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            />
-          </div>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+            rows={5}
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
+          />
+        </div>
 
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Event Type
-            </label>
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Event Type
+          </label>
 
-            <select
-              name="eventType"
-              value={formData.eventType}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            >
-              <option value="">Select event type</option>
-              <option value="Donation">Donation</option>
-              <option value="Cleanup">Cleanup</option>
-              <option value="Plantation">Plantation</option>
-              <option value="Blood Donation">Blood Donation</option>
-              <option value="Food Distribution">Food Distribution</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Image URL
-            </label>
-
-            <input
-              type="url"
-              name="imageUrl"
-              value={formData.imageUrl}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Location
-            </label>
-
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block font-medium text-brand-950">
-              Event Date
-            </label>
-
-            <input
-              type="date"
-              name="eventDate"
-              value={formData.eventDate}
-              onChange={handleChange}
-              min={minDate}
-              required
-              className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white transition hover:bg-brand-950 disabled:cursor-not-allowed disabled:opacity-60"
+          <select
+            name="eventType"
+            value={formData.eventType}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
           >
-            {saving ? "Updating..." : "Update Event"}
-          </button>
-        </form>
-      </div>
-    </div>
-  </section>
-</ProtectedRoute>
+            <option value="">Select event type</option>
+            <option value="Donation">Donation</option>
+            <option value="Cleanup">Cleanup</option>
+            <option value="Plantation">Plantation</option>
+            <option value="Blood Donation">Blood Donation</option>
+            <option value="Food Distribution">Food Distribution</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
 
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Image URL
+          </label>
+
+          <input
+            type="url"
+            name="imageUrl"
+            value={formData.imageUrl}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Location
+          </label>
+
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            required
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block font-medium text-brand-950">
+            Event Date
+          </label>
+
+          <input
+            type="date"
+            name="eventDate"
+            value={formData.eventDate}
+            onChange={handleChange}
+            min={minDate}
+            required
+            className="w-full rounded-lg border border-gray-300 p-3 outline-none focus:border-brand-700"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="w-full rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white transition hover:bg-brand-950 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {saving ? "Updating..." : "Update Event"}
+        </button>
+
+      </form>
+    </div>
+  </div>
+</section>
 
 );
 }

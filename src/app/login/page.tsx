@@ -120,14 +120,14 @@ Welcome Back to Your Community! </h2>
           <div className="flex items-center rounded-lg border border-gray-200 px-4 focus-within:border-brand-800">
             <Mail className="h-5 w-5 text-gray-400" />
 
-            <input 
+            <input
               type="email"
               placeholder="Enter your email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className="h-11 w-full bg-transparent px-3 outline-none [appearance:none] [&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
+              className="h-11 w-full bg-transparent px-3 outline-none"
               required
             />
           </div>
