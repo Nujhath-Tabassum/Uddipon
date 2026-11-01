@@ -343,12 +343,12 @@ export default function HomePage() {
                 className="min-w-0 flex-1 rounded-full border border-white/20 bg-white px-5 py-3 text-sm text-brand-950 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-leaf-400"
               />
 
-              <button
-                type="submit"
-                className="rounded-full bg-leaf-400 px-7 py-3 font-bold text-brand-950 transition-colors hover:bg-leaf-500"
-              >
-                Subscribe
-              </button>
+             <button
+  type="submit"
+  className="rounded-full bg-leaf-500 px-7 py-3 font-bold text-brand-950 transition-colors hover:bg-leaf-600 dark:!bg-[#a8d86e] dark:!text-[#1b3a17] dark:hover:!bg-[#a8d86e]"
+>
+  Subscribe
+</button>
             </form>
 
             <p className="mt-4 text-xs text-brand-100/60">

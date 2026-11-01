@@ -258,19 +258,7 @@ function EventDetailsContent() {
               <div className="mt-8 flex flex-wrap gap-4">
                 {isOwner && (
                   <>
-                    <Link
-                      href={`/events/${id}/edit`}
-                      className="rounded-lg bg-brand-800 px-6 py-3 font-semibold text-white hover:bg-brand-950"
-                    >
-                      Update Event
-                    </Link>
-
-                    <button
-                      onClick={() => setShowDeleteConfirm(true)}
-                      className="rounded-lg bg-red-800 px-6 py-3 font-semibold text-white hover:bg-red-700"
-                    >
-                      Delete Event
-                    </button>
+                    
                   </>
                 )}
 

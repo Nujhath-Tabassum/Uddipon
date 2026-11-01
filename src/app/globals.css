@@ -137,15 +137,103 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+
   html {
     @apply font-sans;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 }
 
-/* Crops the Uddipon logo image down to its icon mark when used in small circles */
+.dark body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.dark [class~="bg-white"] {
+  background-color: var(--card);
+  color: var(--card-foreground);
+}
+
+.dark [class~="bg-[#FAF9F5]"] {
+  background-color: var(--background);
+}
+
+.dark [class~="bg-gray-50"],
+.dark [class~="bg-gray-100"] {
+  background-color: var(--secondary);
+}
+
+.dark [class~="bg-brand-50"] {
+  background-color: #243b2b;
+}
+
+.dark [class~="text-brand-950"],
+.dark [class~="text-brand-900"],
+.dark [class~="text-brand-800"] {
+  color: #f0fdf4;
+}
+
+.dark [class~="text-brand-700"] {
+  color: #dcfce7;
+}
+
+.dark [class~="text-gray-900"],
+.dark [class~="text-gray-800"],
+.dark [class~="text-gray-700"] {
+  color: #f1f5f9;
+}
+
+.dark [class~="text-gray-600"],
+.dark [class~="text-gray-500"] {
+  color: #cbd5e1;
+}
+
+.dark a.bg-brand-100,
+.dark button.bg-brand-100 {
+  color: #1b3a17;
+}
+.dark [class~="text-brand-950"],
+.dark [class~="text-brand-900"],
+.dark [class~="text-brand-800"],
+.dark [class~="text-brand-700"],
+.dark [class~="text-green-900"],
+.dark [class~="text-green-800"] {
+  color: #a8d86e !important;
+}
+.dark a.bg-brand-100,
+.dark button.bg-brand-100 {
+  background-color: #e0f2da !important;
+  color: #1b3a17 !important;
+}
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #9ca3af;
+}
+
+.dark [class~="shadow-md"],
+.dark [class~="shadow-xl"] {
+  --tw-shadow-color: rgb(0 0 0 / 30%);
+}
+
 .logo-mark {
   background-image: url('/Uddipon_ Together for a Better Tomorrow.png');
   background-repeat: no-repeat;
@@ -153,7 +241,32 @@
   background-position: -113px -305px;
 }
 
-/* Handwritten-style accent text (Caveat) used for the taglines */
 .font-hand {
   font-family: var(--font-hand), "Segoe UI", cursive;
+}
+.dark [class~="text-brand-950"],
+.dark [class~="text-brand-900"],
+.dark [class~="text-brand-800"],
+.dark [class~="text-brand-700"],
+.dark [class~="text-brand-900/80"],
+.dark [class~="text-brand-800/80"],
+.dark [class~="text-green-900"],
+.dark [class~="text-green-800"],
+.dark [class~="text-green-700"] {
+  color: #a8d86e !important;
+}
+
+.dark [class~="bg-brand-900"],
+.dark [class~="bg-brand-800"],
+.dark [class~="bg-green-900"],
+.dark [class~="bg-green-800"] {
+  background-color: #a8d86e !important;
+  color: #1b3a17 !important;
+}
+
+.dark [class~="border-brand-900"],
+.dark [class~="border-brand-800"],
+.dark [class~="border-green-900"],
+.dark [class~="border-green-800"] {
+  border-color: #a8d86e !important;
 }

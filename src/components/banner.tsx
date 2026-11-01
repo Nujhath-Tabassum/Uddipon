@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -28,8 +27,8 @@ function LeafSprig({ className }: { className?: string }) {
 
 export default function Banner() {
   return (
-    <section className="bg-green-50 px-3 pt-4 sm:px-6 lg:px-8">
-      <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-2xl sm:rounded-3xl bg-brand-950">
+    <section className="bg-green-50 px-3 pt-4 dark:bg-background sm:px-6 lg:px-8">
+      <div className="relative mx-auto w-full max-w-7xl overflow-hidden rounded-2xl bg-brand-950 sm:rounded-3xl">
         <Image
           src="/Growing Together_ A Community of Change.png"
           alt="Community illustration: volunteers, a green city and hands holding the earth"
@@ -52,12 +51,8 @@ export default function Banner() {
           className="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-leaf-400/20 blur-3xl"
           aria-hidden="true"
         />
-        <LeafSprig
-          className="pointer-events-none absolute -left-3 bottom-10 hidden h-24 w-24 rotate-12 text-leaf-400/30 lg:block"
-        />
-        <LeafSprig
-          className="pointer-events-none absolute left-4 top-3 hidden h-14 w-14 -rotate-[135deg] text-leaf-400/20 xl:block"
-        />
+        <LeafSprig className="pointer-events-none absolute -left-3 bottom-10 hidden h-24 w-24 rotate-12 text-leaf-400/30 lg:block" />
+        <LeafSprig className="pointer-events-none absolute left-4 top-3 hidden h-14 w-14 -rotate-[135deg] text-leaf-400/20 xl:block" />
 
         <div className="relative flex min-h-[300px] flex-col justify-center gap-4 px-5 py-10 sm:min-h-[340px] sm:px-10 sm:py-12 md:min-h-[380px] md:px-14 lg:px-16">
           <h1 className="max-w-xl text-3xl font-bold leading-[1.1] tracking-tight text-white min-[400px]:text-4xl sm:text-5xl lg:text-[3.4rem]">
@@ -91,4 +86,3 @@ export default function Banner() {
     </section>
   );
 }
-

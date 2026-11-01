@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { Suspense, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ interface Event {
   eventDate: string;
 }
 
-export default function EditEventPage() {
+function EditEventContent() {
   const params = useParams();
   const router = useRouter();
 
@@ -37,6 +37,7 @@ export default function EditEventPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [today, setToday] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -47,9 +48,13 @@ export default function EditEventPage() {
     eventDate: "",
   });
 
-  const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Dhaka",
-  }).format(new Date());
+  useEffect(() => {
+    const currentDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Dhaka",
+    }).format(new Date());
+
+    setToday(currentDate);
+  }, []);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -201,7 +206,7 @@ export default function EditEventPage() {
     }
   };
 
-  if (loading) {
+  if (loading || !today) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#FAF9F5]">
         Loading event...
@@ -349,5 +354,19 @@ export default function EditEventPage() {
         </div>
       </section>
     </ProtectedRoute>
+  );
+}
+
+export default function EditEventPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <p>Loading edit page...</p>
+        </div>
+      }
+    >
+      <EditEventContent />
+    </Suspense>
   );
 }
