@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function CreateEventPage() {
   const router = useRouter();

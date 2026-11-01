@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { authClient } from "@/lib/auth-client";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface Event {
 _id: string;

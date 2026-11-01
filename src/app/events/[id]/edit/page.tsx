@@ -14,7 +14,7 @@ import { ArrowLeft } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { authClient } from "@/lib/auth-client";
 
-const API_URL = "http://localhost:8000";
+const API_URL =process.env.NEXT_PUBLIC_API_URL;
 
 const eventTypes = [
 "Donation",
