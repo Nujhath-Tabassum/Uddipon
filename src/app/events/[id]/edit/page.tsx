@@ -1,6 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import {
+Suspense,
+useEffect,
+useState,
+type ChangeEvent,
+type FormEvent,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
@@ -27,6 +33,38 @@ eventType: string;
 imageUrl: string;
 location: string;
 eventDate: string;
+}
+
+function EditEventSkeleton() {
+return ( <section className="min-h-screen animate-pulse bg-[#FAF9F5] px-4 py-12 sm:px-8"> <div className="mx-auto max-w-3xl"> <div className="mb-8 h-6 w-36 rounded bg-gray-200" />
+
+```
+    <div className="rounded-2xl bg-white p-6 shadow-md sm:p-10">
+      <div className="h-9 w-52 rounded bg-gray-200" />
+
+      <div className="mt-3 h-4 w-64 rounded bg-gray-200" />
+
+      <div className="mt-8 space-y-6">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div key={index}>
+            <div className="mb-2 h-5 w-28 rounded bg-gray-200" />
+
+            <div
+              className={`w-full rounded-lg bg-gray-200 ${
+                index === 1 ? "h-32" : "h-12"
+              }`}
+            />
+          </div>
+        ))}
+
+        <div className="h-12 w-full rounded-lg bg-gray-200" />
+      </div>
+    </div>
+  </div>
+</section>
+
+
+);
 }
 
 function EditEventContent() {
@@ -94,7 +132,9 @@ fetchEvent();
 }, [id]);
 
 const handleChange = (
-e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+e: ChangeEvent<
+HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+>
 ) => {
 setFormData({
 ...formData,
@@ -105,7 +145,6 @@ setFormData({
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 e.preventDefault();
 setError("");
-
 
 const title = formData.title.trim();
 const description = formData.description.trim();
@@ -225,9 +264,7 @@ try {
 };
 
 if (loading || !today) {
-return ( <div className="flex min-h-screen items-center justify-center bg-[#FAF9F5]">
-Loading event... </div>
-);
+return <EditEventSkeleton />;
 }
 
 return ( <ProtectedRoute> <section className="min-h-screen bg-[#FAF9F5] px-4 py-12 sm:px-8"> <div className="mx-auto max-w-3xl">
@@ -373,9 +410,7 @@ Back to Details </Link>
 
 export default function EditEventPage() {
 return (
-<Suspense
-fallback={ <div className="flex min-h-screen items-center justify-center"> <p>Loading edit page...</p> </div>
-}
-> <EditEventContent /> </Suspense>
+<Suspense fallback={<EditEventSkeleton />}> <EditEventContent /> </Suspense>
 );
 }
+

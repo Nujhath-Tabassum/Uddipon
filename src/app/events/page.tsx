@@ -16,10 +16,20 @@ location: string;
 eventDate: string;
 }
 
+const categories = [
+"All Events",
+"Donation",
+"Cleanup",
+"Plantation",
+"Blood Donation",
+"Food Distribution",
+"Other",
+];
+
 function EventSkeleton() {
 return ( <div className="animate-pulse overflow-hidden rounded-2xl bg-white shadow-sm"> <div className="h-52 w-full bg-gray-200" />
 
-
+```
   <div className="space-y-4 p-5">
     <div className="h-6 w-24 rounded-full bg-gray-200" />
 
@@ -47,6 +57,14 @@ export default function EventsPage() {
 const [events, setEvents] = useState<Event[]>([]);
 const [loading, setLoading] = useState(true);
 const [error, setError] = useState("");
+const [selectedCategory, setSelectedCategory] = useState("All Events");
+
+const filteredEvents =
+selectedCategory === "All Events"
+? events
+: events.filter(
+(event) => event.eventType === selectedCategory
+);
 
 useEffect(() => {
 const fetchEvents = async () => {
@@ -98,6 +116,24 @@ Upcoming Events </h1>
       </p>
     )}
 
+    {!loading && !error && (
+      <div className="mb-10 flex flex-wrap justify-center gap-3">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+              selectedCategory === category
+                ? "bg-brand-800 text-white"
+                : "bg-white text-brand-800 shadow-sm hover:bg-brand-100"
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+    )}
+
     {!loading && !error && events.length === 0 && (
       <div className="rounded-xl bg-white p-10 text-center shadow-sm">
         <h2 className="text-xl font-semibold text-brand-950">
@@ -117,9 +153,9 @@ Upcoming Events </h1>
       </div>
     )}
 
-    {!loading && !error && events.length > 0 && (
+    {!loading && !error && filteredEvents.length > 0 && (
       <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
+        {filteredEvents.map((event) => (
           <Link
             href={`/events/${event._id}`}
             key={event._id}
@@ -164,6 +200,18 @@ Upcoming Events </h1>
             </div>
           </Link>
         ))}
+      </div>
+    )}
+
+    {!loading && !error && events.length > 0 && filteredEvents.length === 0 && (
+      <div className="rounded-xl bg-white p-10 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-brand-950">
+          No Events Found
+        </h2>
+
+        <p className="mt-2 text-brand-700/70">
+          There are no events in this category right now.
+        </p>
       </div>
     )}
   </div>
